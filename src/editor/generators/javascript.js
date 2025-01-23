@@ -50,14 +50,16 @@ Blockly.JavaScript["joint_absolute"] = function (block) {
 	let joint = block.getFieldValue('JOINT');
 	let angle = block.getFieldValue('DEGREES');
 
-	return code = 'robot("joint_absolute", ' + joint + ', ' + angle + ');\n';
+	let code = 'robot("joint_absolute", ' + joint + ', ' + angle + ');\n';
+	return code;
 };
 
 Blockly.JavaScript["joint_relative"] = function (block) {
 	let joint = block.getFieldValue('JOINT');
 	let angle = block.getFieldValue('DEGREES');
 
-	return code = 'robot("joint_relative", ' + joint + ', ' + angle + ');\n';
+	let code = 'robot("joint_relative", ' + joint + ', ' + angle + ');\n';
+	return code;
 };
 
 
