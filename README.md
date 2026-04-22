@@ -21,7 +21,7 @@ After noticing that the custom object loader only supported STL files (which lac
 **If the upstream PR is merged, this version url will be removed.**
 
 ## Accessibility
-🔗 https://YOUR-USERNAME.github.io/Rocksi/
+🔗 https://ishan-banjara.github.io/Rocksi/
 
 ## Credits
 - **Original simulator**: ndahn and contributors (MIT License)
