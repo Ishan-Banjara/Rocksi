@@ -1,6 +1,6 @@
 # Rocksi (OBJ Loader Fork)
 
-> **This is a fork of [Rocksi by ndahn](https://github.com/ndahn/Rocksi); a free, browser-based robot arm simulator for educational use. All credit for the original simulator goes to the original author. This fork adds native OBJ + MTL + texture loader support as a contribution back to the educational community.
+> **This is a fork of [Rocksi by ndahn](https://github.com/ndahn/Rocksi)** — a free, browser-based robot arm simulator for educational use. All credit for the original simulator goes to the original author. This fork adds native OBJ + MTL + texture loader support as a contribution back to the educational community.
 
 ## About the Original Rocksi
 
@@ -25,4 +25,4 @@ After noticing that the custom object loader only supported STL files (which lac
 
 ## Credits
 - **Original simulator**: ndahn and contributors (MIT License)
-- **OBJ loader extens
+- **OBJ loader extension**: [Ishan Banjara](https://github.com/Ishan-Banjara)
