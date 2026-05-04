@@ -12,7 +12,8 @@ Rocksi is an incredible piece of educational software built by [ndahn](https://g
 
 ## What This Fork Adds
 
-Only one focused change: the "Custom object..." loader now supports `.obj` + `.mtl` + texture images in addition to `.stl`. Everything else is identical to upstream.
+- The "Custom object..." loader now supports `.obj` + `.mtl` + texture images in addition to `.stl`.
+- The scale block now uses a typeable number field instead of a slider, so you can enter values down to `0.001` (the slider was previously locked to `0.1` steps).
 
 ### Why This Fork Exists
 

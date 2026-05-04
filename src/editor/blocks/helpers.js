@@ -8,12 +8,12 @@ Blockly.Blocks["scale"] = {
 			message0: "%{BKY_ROCKSI_BLOCK_SCALE}",
 			args0: [
 				{
-					type: "field_slider",
+					type: "field_number",
 					name: "NUM",
 					value: 1,
-					min: 0.01,
-                    max: 10,
-                    precision: 0.1,
+					min: 0.001,
+					max: 10,
+					precision: 0.001,
 				}
 			],
 			output: 'Number',
