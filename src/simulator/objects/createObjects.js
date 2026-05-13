@@ -1,9 +1,5 @@
 /**
 This script handeles the 3D object addition
-
-MODIFIED: Added native OBJ + MTL loading support alongside existing STL loader.
-          Original STL behavior preserved. New OBJ loader uses Three.js's
-          OBJLoader and MTLLoader for full geometry + material support.
 **/
 import { BoxBufferGeometry,
          MeshPhongMaterial,
@@ -22,7 +18,6 @@ import { Vec3 } from 'cannon-es';
 
 import { TransformControls } from 'three/examples/jsm/controls/TransformControls.js';
 import { STLLoader } from 'three/examples/jsm/loaders/STLLoader.js';
-// === NEW: OBJ + MTL loader imports ===
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader.js';
 import { MTLLoader } from 'three/examples/jsm/loaders/MTLLoader.js';
 
@@ -124,8 +119,6 @@ export function addGeometry(simObject) {
             break;
 
         case 'custom':
-            // === MODIFIED: Use the new universal user file loader ===
-            // Accepts .stl, .obj (with optional .mtl + textures)
             loadUserFile(simObject);
             break;
 
@@ -167,11 +160,7 @@ function loadAssetSTL(simObject, assetPath, shape) {
     });
 }
 
-// =============================================================================
-// === NEW: Universal user file loader - routes .stl / .obj to correct loader ==
-// =============================================================================
-// Supports multi-file selection so users can pick .obj + .mtl + textures
-// together. File extension is used to determine which loader to dispatch.
+
 function loadUserFile(simObject) {
     const upload = document.createElement('input');
     upload.setAttribute('type', 'file');
@@ -183,12 +172,10 @@ function loadUserFile(simObject) {
             const files = Array.from(fileSelectedEvent.target.files);
             if (files.length === 0) return;
 
-            // Find the primary geometry file (.stl or .obj)
             const stlFile = files.find(f => f.name.toLowerCase().endsWith('.stl'));
             const objFile = files.find(f => f.name.toLowerCase().endsWith('.obj'));
 
             if (stlFile) {
-                console.log('[Rocksi-OBJ-Extension] Loading STL:', stlFile.name);
                 const reader = new FileReader();
                 reader.addEventListener('load', (event) => {
                     loadSTL(simObject, event.target.result);
@@ -196,11 +183,9 @@ function loadUserFile(simObject) {
                 reader.readAsArrayBuffer(stlFile);
             }
             else if (objFile) {
-                console.log('[Rocksi-OBJ-Extension] Loading OBJ:', objFile.name);
                 loadUserOBJ(simObject, files, objFile);
             }
             else {
-                console.error('[Rocksi-OBJ-Extension] No .stl or .obj file selected.');
                 alert('Please select an .stl or .obj file (you can also include .mtl and texture files).');
             }
         }
@@ -213,7 +198,6 @@ function loadUserFile(simObject) {
 
 
 function loadUserOBJ(simObject, allFiles, objFile) {
-    // Find optional .mtl file and any image textures the user uploaded
     const mtlFile = allFiles.find(f => f.name.toLowerCase().endsWith('.mtl'));
     const textureFiles = allFiles.filter(f =>
         /\.(png|jpe?g|bmp)$/i.test(f.name)
@@ -237,7 +221,6 @@ function loadUserOBJ(simObject, allFiles, objFile) {
         const objText = event.target.result;
 
         if (mtlFile) {
-            console.log('[Rocksi-OBJ-Extension] Loading MTL:', mtlFile.name);
             const mtlReader = new FileReader();
             mtlReader.addEventListener('load', (mtlEvent) => {
                 const mtlText = mtlEvent.target.result;
@@ -253,7 +236,6 @@ function loadUserOBJ(simObject, allFiles, objFile) {
             mtlReader.readAsText(mtlFile);
         }
         else {
-            console.log('[Rocksi-OBJ-Extension] No MTL provided, using default material.');
             const objLoader = new OBJLoader(manager);
             const obj = objLoader.parse(objText);
 
@@ -271,33 +253,8 @@ function loadUserOBJ(simObject, allFiles, objFile) {
 
 function attachOBJToSimObject(simObject, obj) {
     const size = new Vector3();
- 
-    obj.traverse((child) => {
-        if (child.isMesh) {
-            const convertMaterial = (mat) => {
-                if (mat && mat.isMeshPhongMaterial) return mat;
-                return new MeshPhongMaterial({
-                    color: (mat && mat.color) ? mat.color : 0xcccccc,
-                    map: (mat && mat.map) ? mat.map : null,
-                    normalMap: (mat && mat.normalMap) ? mat.normalMap : null,
-                    specularMap: (mat && mat.specularMap) ? mat.specularMap : null,
-                    side: 2,  // DoubleSide
-                });
-            };
- 
-            if (Array.isArray(child.material)) {
-                child.material = child.material.map(convertMaterial);
-            } else {
-                child.material = convertMaterial(child.material);
-            }
-            child.visible = true;
-            child.frustumCulled = false;
-        }
-    });
- 
     const rawBox = new Box3().setFromObject(obj);
     rawBox.getSize(size);
-    console.log('[Rocksi-OBJ-Extension v3] Raw size:', size.toArray().map(n => n.toFixed(3)));
  
     const TARGET_SIZE = 1.0;
     const maxDim = Math.max(size.x, size.y, size.z);
@@ -306,10 +263,8 @@ function attachOBJToSimObject(simObject, obj) {
         const sf = TARGET_SIZE / maxDim;
         obj.scale.set(sf, sf, sf);
         simObject.scaleFactor = sf;
-        console.log('[Rocksi-OBJ-Extension v3] Scale factor:', sf.toFixed(4));
     } else {
         simObject.scaleFactor = 1;
-        console.warn('[Rocksi-OBJ-Extension v3] Could not scale - maxDim was', maxDim);
     }
  
     obj.updateMatrixWorld(true);
@@ -321,9 +276,6 @@ function attachOBJToSimObject(simObject, obj) {
     obj.position.x -= scaledCenter.x;
     obj.position.y -= scaledCenter.y;
     obj.position.z -= scaledBox.min.z;
- 
-    console.log('[Rocksi-OBJ-Extension v3] Final size:', size.toArray().map(n => n.toFixed(3)));
-    console.log('[Rocksi-OBJ-Extension v3] Position offset applied');
  
     simObject.size.copy(size);
  
